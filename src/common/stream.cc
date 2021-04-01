@@ -44,6 +44,7 @@ namespace deepx_core {
 /************************************************************************/
 bool IsDirSeparator(char c) noexcept { return c == '\\' || c == '/'; }
 
+// 获取路径中的文件名
 std::string basename(const std::string& path) {
   if (path == "/") {
     return "/";
@@ -80,6 +81,7 @@ std::string dirname(const std::string& path) {
     }
   }
 
+  // 它在区间[first,end)中搜寻使一元判断式pred为true的第一个元素。
   auto it = std::find_if(new_path.rbegin(), new_path.rend(), IsDirSeparator);
   if (it == new_path.rend()) {
     return ".";
@@ -89,7 +91,7 @@ std::string dirname(const std::string& path) {
   return std::string(new_path.begin(), it.base());
 }
 
-//规范化路径
+//规范化路径,去除文件中的最后一个斜杠
 std::string CanonicalizePath(const std::string& path) {
   if (path.empty()) {
     return "";
@@ -121,12 +123,15 @@ bool IsHDFSPath(const std::string& path) noexcept {
   return path.size() >= 7 && path.compare(0, 7, "hdfs://") == 0;
 }
 
+// 判断是否是压缩文件
 bool IsGzipFile(const std::string& file) noexcept {
   return file.size() >= 3 && file.compare(file.size() - 3, 3, ".gz") == 0;
 }
 
+// 是否是标准的输入输出路径
 std::string StdinStdoutPath() { return "-"; }
 
+// 是否是标准的输入输出路径
 bool IsStdinStdoutPath(const std::string& path) noexcept { return path == "-"; }
 
 static bool LocalFileExists(const std::string& file) noexcept {
@@ -1342,6 +1347,7 @@ static void HDFSInfo2Stat(const hdfsFileInfo& info, FileStat* stat) noexcept {
   stat->set_file_size((size_t)info.mSize);
 }
 
+// 创建HDFSFileSystem
 HDFSFileSystem::HDFSFileSystem(HDFSHandle* handle) : handle_(handle) {}
 
 bool HDFSFileSystem::Stat(const FilePath& path, FileStat* stat) {

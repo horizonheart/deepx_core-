@@ -409,6 +409,8 @@ void TrainerShard::Save() {
 void CheckFlags() {
   AutoFileSystem fs;
 
+  // DXCHECK_THROW 参数为false的时候，会跑出异常
+  
   // 检查参数是否对得上
   DXCHECK_THROW(!FLAGS_instance_reader.empty());
   StringMap config;

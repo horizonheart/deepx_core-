@@ -71,7 +71,7 @@ class FilePath {
   const_reverse_iterator rend() const noexcept { return path_.rend(); }
   const_reverse_iterator crend() const noexcept { return path_.crend(); }
 };
-
+// 以下为运算符重载
 inline bool operator==(const FilePath& left, const FilePath& right) {
   return left.str() == right.str();
 }
@@ -154,9 +154,8 @@ class FileStat {
 };
 
 /************************************************************************/
-/* FileSystem */
+/* FileSystem 文件系统的基类*/
 /************************************************************************/
-// todo 文件系统的基类
 class FileSystem {
  public:
   virtual ~FileSystem() = default;
@@ -594,7 +593,7 @@ class HDFSFileStream : public IOStream {
 };
 
 /************************************************************************/
-/* AutoFileSystem */
+/* AutoFileSystem 自动识别的文件系统*/
 /************************************************************************/
 class AutoFileSystem : public FileSystem {
  protected:
