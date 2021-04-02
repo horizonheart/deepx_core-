@@ -14,7 +14,7 @@ namespace deepx_core {
 namespace {
 
 /************************************************************************/
-/* DefaultShardFunc */
+/* DefaultShardFunc 默认分片使用的函数 */
 /************************************************************************/
 class DefaultShardFunc : public DataType {
  public:
@@ -45,15 +45,16 @@ class ModuloShardFunc : public DataType {
 };
 
 /************************************************************************/
-/* ShardFuncMap */
+/* ShardFuncMap 使用的是单例*/
 /************************************************************************/
 class ShardFuncMap : public DataType {
  private:
   using shard_func_t = std::pair<tsr_shard_func_t, srm_shard_func_t>;
   using shard_func_map_t = std::unordered_map<std::string, shard_func_t>;
-  shard_func_map_t map_;
+  shard_func_map_t map_; //map中存在值
 
  public:
+  // 注册函数
   void Register(const std::string& name, tsr_shard_func_t tsr_shard_func,
                 srm_shard_func_t srm_shard_func) {
     if (map_.count(name) > 0) {
@@ -68,6 +69,7 @@ class ShardFuncMap : public DataType {
     map_.emplace(name, std::make_pair(tsr_shard_func, srm_shard_func));
   }
 
+  // 根据name取值
   void Get(const std::string& name, tsr_shard_func_t* tsr_shard_func,
            srm_shard_func_t* srm_shard_func) {
     auto it = map_.find(name);
@@ -79,6 +81,7 @@ class ShardFuncMap : public DataType {
   }
 
  public:
+  // 获取单例
   static ShardFuncMap& GetInstance() {
     static ShardFuncMap shard_func_map;
     return shard_func_map;
@@ -86,7 +89,7 @@ class ShardFuncMap : public DataType {
 };
 
 /************************************************************************/
-/* DefaultShardFuncRegister */
+/* DefaultShardFuncRegister 加载的时候就会自动注册 */
 /************************************************************************/
 class DefaultShardFuncRegister {
  public:
@@ -96,7 +99,7 @@ class DefaultShardFuncRegister {
 } default_shard_func_register;
 
 /************************************************************************/
-/* ModuloShardFuncRegister */
+/* ModuloShardFuncRegister 默认注册*/
 /************************************************************************/
 // backward compatibility
 class ModuloShardFuncRegister {
@@ -155,6 +158,7 @@ void Shard::RegisterShardFunc(const std::string& shard_func_name,
                                        srm_shard_func);
 }
 
+// 模型初始化
 void Shard::_Init(int shard_mode, int shard_size,
                   const std::string& shard_func_name) {
   shard_mode_ = shard_mode;
@@ -164,8 +168,10 @@ void Shard::_Init(int shard_mode, int shard_size,
                                   &srm_shard_func_);
 }
 
+// 模型不切割
 void Shard::InitNonShard() { _Init(0, 1, "default"); }
 
+// 模型切割
 void Shard::InitShard(int shard_size, const std::string& shard_func_name) {
   _Init(1, shard_size, shard_func_name);
 }

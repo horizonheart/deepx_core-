@@ -17,7 +17,7 @@
 namespace deepx_core {
 
 /************************************************************************/
-/* DataTypeT */
+/* DataTypeT 整个框架使用的数据类型*/
 /************************************************************************/
 template <typename T, typename I, int TOKEN>
 class DataTypeT {
@@ -40,6 +40,7 @@ class DataTypeT {
   using ts_t = uint32_t;
   using id_ts_map_t = std::unordered_map<int_t, ts_t>;
 
+  // 函数指针
   using tsr_shard_func_t = std::function<int(const std::string&, int)>;
   using srm_shard_func_t = std::function<int(int_t, int)>;
 

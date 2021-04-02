@@ -63,7 +63,7 @@ namespace {
 Shard FLAGS_shard;
 
 /************************************************************************/
-/* Trainer */
+/* Trainer 训练函数的基类*/
 /************************************************************************/
 class Trainer {
  protected:
@@ -90,6 +90,7 @@ class Trainer {
   virtual void Save();
 };
 
+// todo 训练初始化函数
 void Trainer::Init() {
   if (FLAGS_in_model.empty()) {
     std::unique_ptr<ModelZoo> model_zoo(NewModelZoo(FLAGS_model));
@@ -202,7 +203,7 @@ void Trainer::Save() {
 }
 
 /************************************************************************/
-/* TrainerNonShard */
+/* TrainerNonShard 模型不切片的训练函数*/
 /************************************************************************/
 class TrainerNonShard : public Trainer {
  private:
@@ -214,6 +215,7 @@ class TrainerNonShard : public Trainer {
 };
 
 void TrainerNonShard::Init() {
+  //先调用父类的构造函数
   Trainer::Init();
 
   model_shard_.seed(FLAGS_seed);
@@ -410,11 +412,13 @@ void CheckFlags() {
   AutoFileSystem fs;
 
   // DXCHECK_THROW 参数为false的时候，会跑出异常
-  
+
   // 检查参数是否对得上
   DXCHECK_THROW(!FLAGS_instance_reader.empty());
   StringMap config;
+  //解析参数，将解析的参数以键值对的形式存储到config的map中
   DXCHECK_THROW(ParseConfig(FLAGS_instance_reader_config, &config));
+  
   if (config.count("batch") > 0) {
     int batch = std::stoi(config.at("batch"));
     if (batch != FLAGS_batch) {
@@ -425,13 +429,15 @@ void CheckFlags() {
       FLAGS_batch = batch;
     }
   }
+
   DXCHECK_THROW(FLAGS_epoch > 0);
   DXCHECK_THROW(FLAGS_batch > 0);
   DXCHECK_THROW(FLAGS_thread > 0);
 
-  //Canonicalize 规范化 规范化路径
+  //Canonicalize 规范化路径，去除目录中最后一个斜杠
   CanonicalizePath(&FLAGS_in);
   DXCHECK_THROW(!FLAGS_in.empty());
+
   DXCHECK_THROW(fs.Open(FLAGS_in));
 
   if (IsStdinStdoutPath(FLAGS_in)) {
@@ -483,11 +489,13 @@ void CheckFlags() {
   if (!FLAGS_out_feature_kv_model.empty()) {
     DXCHECK_THROW(fs.Open(FLAGS_out_feature_kv_model));
     DXCHECK_THROW(!IsStdinStdoutPath(FLAGS_out_feature_kv_model));
+    // 检查版本
     FeatureKVUtil::CheckVersion(FLAGS_out_feature_kv_protocol_version);
   }
 
   DXCHECK_THROW(FLAGS_verbose >= 0);
 
+  // 是否允许时间戳
   if (FLAGS_ts_enable) {
     DXCHECK_THROW(FLAGS_ts_now <=
                   (google::uint64)std::numeric_limits<DataType::ts_t>::max());
@@ -498,6 +506,7 @@ void CheckFlags() {
   DXCHECK_THROW(FLAGS_freq_filter_threshold <=
                 (google::uint64)std::numeric_limits<DataType::freq_t>::max());
 
+  // 模型分片数量
   if (FLAGS_model_shard == 0) {
     FLAGS_shard.InitNonShard();
   } else {

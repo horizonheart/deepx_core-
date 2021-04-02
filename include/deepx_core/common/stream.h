@@ -194,7 +194,7 @@ class FileSystem {
 };
 
 /************************************************************************/
-/* LocalFileSystem */
+/* LocalFileSystem 本地文件系统 */
 /************************************************************************/
 class LocalFileSystem : public FileSystem {
  public:
@@ -529,10 +529,9 @@ class InputStringStream : public InputStream {
 bool HasHDFS() noexcept;
 
 /************************************************************************/
-/* HDFSHandle */
+/* HDFSHandle hdfs接口函数*/
 /************************************************************************/
 
-// 接口函数
 class HDFSHandle {
  private:
   void* raw_handle_ = nullptr;

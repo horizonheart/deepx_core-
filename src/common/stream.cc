@@ -167,7 +167,7 @@ FileStat FileStat::StdinStdout() noexcept {
 }
 
 /************************************************************************/
-/* FileSystem */
+/* FileSystem 基类的具体实现*/
 /************************************************************************/
 bool FileSystem::Exists(const FilePath& path) {
   FileStat stat;
@@ -1137,7 +1137,7 @@ namespace {
 bool LoadHDFSFunc(const char* so) {
   void* handle;
   if (so) {
-    handle = dlopen(so, RTLD_NOW);
+    handle = dlopen(so, RTLD_NOW); //返回句柄
     if (handle == nullptr) {
       return false;
     }
@@ -1225,10 +1225,8 @@ bool HasHDFS() noexcept { return false; }
 namespace {
 
 /************************************************************************/
-/* HDFSRawHandleManager */
+/* HDFSRawHandleManager HDFS资源管理器，通过获取此容器获取hdfs的连接*/
 /************************************************************************/
-
-//HDFS资源管理器，通过获取此容器获取hdfs的连接
 class HDFSRawHandleManager {
  public:
   void* Get(const std::string& host, uint16_t port, const std::string& ugi,
@@ -1284,13 +1282,13 @@ class HDFSRawHandleManager {
 }  // namespace
 
 /************************************************************************/
-/* HDFSHandle */
+/* HDFSHandle 具体实现类 */
 /************************************************************************/
 
-// todo=============================HDFSHandle的实现类=============================
 // 析构函数
 HDFSHandle::~HDFSHandle() { Close(); }
 
+// 和hdfs建立连接
 bool HDFSHandle::Connect(const char* name_node_host, uint16_t name_node_port) {
   Close();
 
@@ -1819,11 +1817,12 @@ bool AutoFileSystem::Move(const FilePath& old_path, const FilePath& new_path) {
 }
 //打开文件
 bool AutoFileSystem::Open(const std::string& path) {
+  // 重置文件指针
   Close();
 
   // 判断是否是hdfs路径
   if (IsHDFSPath(path)) {
-    // 如果是hdfs路径，同时需要有包含hdfs路径的引用
+    // 如果是hdfs路径，同时需要有包含hdfs相关的动态库的引用
     if (!HasHDFS()) {
       return false;
     }

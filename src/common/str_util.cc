@@ -34,7 +34,7 @@ bool EndWith(const std::string& s, const std::string& ending) noexcept {
   return std::equal(ending.rbegin(), ending.rend(), s.rbegin());
 }
 
-// 字符串切割
+// 字符串分割
 void Split(const std::string& s, const std::string& sep,
            std::vector<std::string>* vs, bool discard_empty) {
   vs->clear();

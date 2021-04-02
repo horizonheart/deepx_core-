@@ -12,14 +12,15 @@
 namespace deepx_core {
 
 /************************************************************************/
-/* ClassFactory */
+/* ClassFactory 创建类的泛型工厂*/
 /************************************************************************/
 template <typename T>
 class ClassFactory {
  public:
   using value_type = T;
   using pointer = value_type*;
-  using creator = pointer (*)();
+  // 函数指针
+  using creator = pointer (*)(); 
 
  private:
   std::unordered_map<std::string, creator> map_;
@@ -27,6 +28,9 @@ class ClassFactory {
 
  public:
   void Register(const std::string& name, creator creator) {
+    if(name.compare("deepfm")==0){
+      DXINFO("--thread will be set to 1.");
+    }
     if (map_.count(name) > 0) {
       DXTHROW_INVALID_ARGUMENT("Duplicate registered name: %s.", name.c_str());
     }
@@ -34,6 +38,7 @@ class ClassFactory {
     set_.emplace(name);
   }
 
+  // 创建新的实例
   pointer New(const std::string& name) const {
     auto it = map_.find(name);
     if (it == map_.end()) {
@@ -46,9 +51,11 @@ class ClassFactory {
   const std::set<std::string>& Names() const noexcept { return set_; }
 
  private:
-  ClassFactory() = default;
+//  私有构造函数，为了类成为单例
+  ClassFactory() = default; 
 
  public:
+  // 对外开放的接口，获取单例
   static ClassFactory& GetInstance() {
     static ClassFactory factory;
     return factory;
@@ -81,6 +88,7 @@ class ClassFactoryRegister {
   deepx_core::ClassFactoryRegister<T, U> _CLASS_FACTORY_CONCAT( \
       T, U, __COUNTER__)(name)
 
+// todo 定义类的动物园
 #define CLASS_FACTORY_NEW(T, name) \
   deepx_core::ClassFactory<T>::GetInstance().New(name)
 

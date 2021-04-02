@@ -82,7 +82,7 @@ struct FeatureKVHead {
 #pragma pack()
 
 /************************************************************************/
-/* FeatureKVUtil */
+/* FeatureKVUtil  特征使用的工具类*/
 /************************************************************************/
 class FeatureKVUtil : public DataType {
  public:

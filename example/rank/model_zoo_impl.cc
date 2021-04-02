@@ -71,9 +71,10 @@ bool ModelZooImpl::InitConfigKV(const std::string& k, const std::string& v) {
 }
 
 /************************************************************************/
-/* ModelZoo functions */
+/* ModelZoo functions 构造模型的动物园*/
 /************************************************************************/
 std::unique_ptr<ModelZoo> NewModelZoo(const std::string& name) {
+  
   std::unique_ptr<ModelZoo> model_zoo(MODEL_ZOO_NEW(name));
   if (!model_zoo) {
     DXERROR("Invalid model name: %s.", name.c_str());

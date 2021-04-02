@@ -21,7 +21,7 @@ bool LoadShardLegacy(const std::string& dir, Shard* shard);
 bool LoadShard(const std::string& dir, Shard* shard);
 
 /************************************************************************/
-/* Shard */
+/* Shard 模型是否分片使用 */
 /************************************************************************/
 class Shard : public DataType {
  private:

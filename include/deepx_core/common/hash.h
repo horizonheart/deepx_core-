@@ -12,6 +12,7 @@ namespace deepx_core {
 // https://github.com/aappleby/smhasher/blob/master/src/MurmurHash2.cpp
 // https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp
 
+// 哈希函数
 inline uint64_t MurmurHash3Mix(uint64_t k) noexcept {
   k ^= k >> 33;
   k *= UINT64_C(0xff51afd7ed558ccd);
@@ -23,6 +24,7 @@ inline uint64_t MurmurHash3Mix(uint64_t k) noexcept {
 
 uint64_t MurmurHash2(const void* data, size_t size, uint64_t seed) noexcept;
 
+// 字符串转int的哈希函数
 inline uint64_t MurmurHash2(const std::string& k) noexcept {
   return MurmurHash2(k.data(), k.size(), UINT64_C(0xc70f6907));
 }

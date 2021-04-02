@@ -5,7 +5,7 @@
 #include <deepx_core/common/hash.h>
 
 namespace deepx_core {
-
+// 哈希函数
 uint64_t MurmurHash2(const void* data, size_t size, uint64_t seed) noexcept {
   static constexpr uint64_t M = UINT64_C(0xc6a4a7935bd1e995);
   static constexpr uint64_t R = 47;
