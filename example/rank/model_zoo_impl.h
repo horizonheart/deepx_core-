@@ -17,10 +17,17 @@
 
 namespace deepx_core {
 
+// 注册模型
 #define MODEL_ZOO_REGISTER(class_name, name) \
   CLASS_FACTORY_REGISTER(ModelZoo, class_name, name)
+
+// 创建模型
 #define MODEL_ZOO_NEW(name) CLASS_FACTORY_NEW(ModelZoo, name)
+
+// 获取所有注册的模型类
 #define MODEL_ZOO_NAMES() CLASS_FACTORY_NAMES(ModelZoo)
+
+// 获取模型的名称，供所有的子类使用
 #define DEFINE_MODEL_ZOO_LIKE(clazz_name) \
   const char* class_name() const noexcept override { return #clazz_name; }
 

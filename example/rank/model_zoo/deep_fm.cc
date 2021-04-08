@@ -14,6 +14,7 @@ class DeepFMModel : public ModelZooImpl {
   DEFINE_MODEL_ZOO_LIKE(DeepFMModel);
 
  protected:
+//  初始化kv的配置
   bool InitConfigKV(const std::string& k, const std::string& v) override {
     if (ModelZooImpl::InitConfigKV(k, v)) {
     } else if (k == "deep_dims") {

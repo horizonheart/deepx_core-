@@ -96,7 +96,9 @@ void Trainer::Init() {
     std::unique_ptr<ModelZoo> model_zoo(NewModelZoo(FLAGS_model));
     DXCHECK_THROW(model_zoo);
     StringMap config;
+    // 解析配置
     DXCHECK_THROW(ParseConfig(FLAGS_model_config, &config));
+    // 初始化配置
     DXCHECK_THROW(model_zoo->InitConfig(config));
     DXCHECK_THROW(model_zoo->InitGraph(&graph_));
   } else {

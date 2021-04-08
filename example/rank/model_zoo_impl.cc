@@ -28,6 +28,7 @@ bool ModelZooImpl::InitConfig(const AnyMap& config) {
   return true;
 }
 
+// TODO 初始化配置
 bool ModelZooImpl::InitConfig(const StringMap& config) {
   if (!PreInitConfig()) {
     return false;

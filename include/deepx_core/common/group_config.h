@@ -12,7 +12,7 @@
 namespace deepx_core {
 
 /************************************************************************/
-/* GroupConfigItem3 */
+/* GroupConfigItem3  结构体，存放的是embedding的值*/
 /************************************************************************/
 struct GroupConfigItem3 {
   // group id
