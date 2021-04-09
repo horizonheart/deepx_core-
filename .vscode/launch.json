@@ -1,0 +1,24 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(lldb) 启动",
+            "type": "lldb",
+            "request": "launch",
+            "program": "/Users/wangtenglong/Desktop/study/deepx_core/build_x86_64-apple-darwin17.7.0_d/example/rank/trainer",
+            "args": ["--instance_reader=libsvm",
+                     "--instance_reader_config=batch=32;label_size=1;w=1;uuid=0",
+                     "--model=deep_fm",
+                     "--model_config=config=libsvm_group_config.txt;deep_dims=64,32",
+                     "--epoch=1","--thread=1","--in=libsvm.txt","--out_model=model"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb"
+        }
+    ]
+}
