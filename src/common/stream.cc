@@ -115,7 +115,7 @@ std::string CanonicalizePath(const std::string& path) {
   return new_path;
 }
 
-//Canonicalize 规范化 规范化路径
+// Canonicalize 规范化 规范化路径
 void CanonicalizePath(std::string* path) { *path = CanonicalizePath(*path); }
 
 // 判断是否是hdfs路径
@@ -134,6 +134,7 @@ std::string StdinStdoutPath() { return "-"; }
 // 是否是标准的输入输出路径
 bool IsStdinStdoutPath(const std::string& path) noexcept { return path == "-"; }
 
+// 判断本地文件是否存在
 static bool LocalFileExists(const std::string& file) noexcept {
   LocalFileSystem fs;
   FileStat stat;
@@ -184,9 +185,10 @@ bool FileSystem::IsDir(const FilePath& path) {
   }
   return stat.IsDir();
 }
-
+// 判断是否是文件
 bool FileSystem::IsFile(const FilePath& path) {
   FileStat stat;
+  // 判断文件是否存在以及文件的大小
   if (!Stat(path, &stat)) {
     return false;
   }
@@ -401,6 +403,7 @@ bool LocalFileSystem::Move(const FilePath& old_path, const FilePath& new_path) {
   return true;
 }
 #else
+// 本地文件系统工具类，判断是否尊重
 bool LocalFileSystem::Stat(const FilePath& path, FileStat* _stat) {
   if (IsStdinStdoutPath(path.str())) {
     *_stat = FileStat::StdinStdout();
@@ -966,7 +969,7 @@ size_t CFileStream::Peek(void* data, size_t size) {
   }
   return bytes;
 }
-
+// 打开文件，以不同的mode的形式
 bool CFileStream::Open(const std::string& file, int mode) {
   Close();
 
@@ -1137,7 +1140,7 @@ namespace {
 bool LoadHDFSFunc(const char* so) {
   void* handle;
   if (so) {
-    handle = dlopen(so, RTLD_NOW); //返回句柄
+    handle = dlopen(so, RTLD_NOW);  //返回句柄
     if (handle == nullptr) {
       return false;
     }
@@ -1793,7 +1796,7 @@ static bool ParseHDFSNameNode(const std::string& path,
   *name_node_port = (uint16_t)std::stoi(path.substr(k + 1, j - k));
   return true;
 }
-
+// AutoFileSystem判断文件的状态
 bool AutoFileSystem::Stat(const FilePath& path, FileStat* stat) {
   return fs_->Stat(path, stat);
 }
@@ -1852,7 +1855,7 @@ bool AutoFileSystem::IsOpen() const noexcept { return fs_.get(); }
 
 //先重置指针
 void AutoFileSystem::Close() noexcept {
-  fs_.reset(); //重置指针
+  fs_.reset();  //重置指针
   // put it last
   hdfs_handle_.reset();
 }
@@ -1872,7 +1875,7 @@ bool AutoFileSystem::IsDir(const std::string& path) {
   }
   return fs.IsDir(FilePath(path));
 }
-
+// 判断是否是文件
 bool AutoFileSystem::IsFile(const std::string& path) {
   AutoFileSystem fs;
   if (!fs.Open(path)) {
@@ -2004,8 +2007,9 @@ size_t AutoInputFileStream::Peek(void* data, size_t size) {
   bad_ = is_->bad();
   return bytes;
 }
-
+// TODO 读取文件
 bool AutoInputFileStream::Open(const std::string& file) {
+  //释放指针的资源
   Close();
 
   if (IsHDFSPath(file)) {
@@ -2015,10 +2019,12 @@ bool AutoInputFileStream::Open(const std::string& file) {
 
     std::string name_node_host;
     uint16_t name_node_port;
+    // 1.0 解析hdfs资源，解析namenode和datanode
     if (!ParseHDFSNameNode(file, &name_node_host, &name_node_port)) {
       return false;
     }
 
+    // 2.0 连接hdfs
     std::unique_ptr<HDFSHandle> hdfs_handle(new HDFSHandle);
     if (!hdfs_handle->Connect(name_node_host, name_node_port)) {
       return false;
@@ -2061,7 +2067,7 @@ bool AutoInputFileStream::Open(const std::string& file) {
 }
 
 bool AutoInputFileStream::IsOpen() const noexcept { return is_.get(); }
-
+// 关闭资源，防止资源泄露
 void AutoInputFileStream::Close() noexcept {
   bad_ = 1;
   is_extra_.reset();

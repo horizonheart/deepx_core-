@@ -8,16 +8,18 @@ namespace deepx_core {
 
 class DeepFMModel : public ModelZooImpl {
  private:
-  std::vector<int> deep_dims_{64, 32, 1};
+  std::vector<int> deep_dims_{64, 32, 1};  //默认值
 
  public:
   DEFINE_MODEL_ZOO_LIKE(DeepFMModel);
 
  protected:
-//  初始化kv的配置
+  //  初始化kv的配置
   bool InitConfigKV(const std::string& k, const std::string& v) override {
     if (ModelZooImpl::InitConfigKV(k, v)) {
-    } else if (k == "deep_dims") {
+    }
+    //解析神经网的mlp维度
+    else if (k == "deep_dims") {
       if (!ParseDeepDimsAppendOne(v, &deep_dims_, k.c_str())) {
         return false;
       }

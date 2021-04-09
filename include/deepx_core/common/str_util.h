@@ -23,7 +23,7 @@ bool EndWith(const std::string& s, const std::string& ending) noexcept;
 void Split(const std::string& s, const std::string& sep,
            std::vector<std::string>* vs, bool discard_empty = true);
 
-// Split 's' with 'sep'.
+// 利用分隔符sep切割字符串s
 // If 'discard_empty' is true, empty string will be discarded.
 //
 // Return if all std::string objects are converted to T objects.
@@ -32,8 +32,10 @@ bool Split(const std::string& s, const std::string& sep, std::vector<T>* vt,
            bool discard_empty = true) {
   std::vector<std::string> vs;
   Split(s, sep, &vs, discard_empty);
-  vt->resize(vs.size());
+  vt->resize(vs.size()); //将切割后的字符串存放到vt中
   for (size_t i = 0; i < vs.size(); ++i) {
+    // istringstream::istringstream(string str);
+    // 它的作用是从string对象str中读取字符。
     std::istringstream is(vs[i]);
     is >> (*vt)[i];
     if (!is || !is.eof()) {

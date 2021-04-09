@@ -30,7 +30,7 @@ std::istream& operator>>(std::istream& is, GroupConfigItem3& item) {
 }
 
 /************************************************************************/
-/* GroupConfigItem3 functions */
+/* GroupConfigItem3 functions 解析加载文件中的配置文件*/
 /************************************************************************/
 bool LoadGroupConfig(const std::string& file,
                      std::vector<GroupConfigItem3>* items, int* max_group_id) {
@@ -209,7 +209,7 @@ bool GuessGroupConfig(const std::string& file_or_info,
     return ParseGroupConfig(file_or_info, items, max_group_id);
   }
 }
-
+// 解析组集合的配置，解析放到文件中的配置
 bool GuessGroupConfig(const std::string& file_or_info,
                       std::vector<GroupConfigItem3>* items, int* max_group_id,
                       const char* gflag) {

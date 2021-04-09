@@ -37,6 +37,7 @@ bool ModelZooImpl::InitConfig(const StringMap& config) {
   for (const auto& entry : config) {
     const std::string& k = entry.first;
     const std::string& v = entry.second;
+    // 初始化key value类型的配置
     if (!InitConfigKV(k, v)) {
       return false;
     }
@@ -48,6 +49,7 @@ bool ModelZooImpl::InitConfig(const StringMap& config) {
   return true;
 }
 
+// todo 父类初始化key value类型的配置
 bool ModelZooImpl::InitConfigKV(const std::string& k, const std::string& v) {
   if (k == "config" || k == "group_config") {
     if (!GuessGroupConfig(v, &items_, nullptr, k.c_str())) {
@@ -75,7 +77,6 @@ bool ModelZooImpl::InitConfigKV(const std::string& k, const std::string& v) {
 /* ModelZoo functions 构造模型的动物园*/
 /************************************************************************/
 std::unique_ptr<ModelZoo> NewModelZoo(const std::string& name) {
-  
   std::unique_ptr<ModelZoo> model_zoo(MODEL_ZOO_NEW(name));
   if (!model_zoo) {
     DXERROR("Invalid model name: %s.", name.c_str());

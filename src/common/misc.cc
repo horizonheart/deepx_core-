@@ -61,14 +61,14 @@ std::string GetOutputPredictFile(const std::string& dir,
   }
   return dir + "/" + out_file;
 }
-
+// 解析模型使用的mlp的维度
 bool ParseDeepDims(const std::string& v, std::vector<int>* deep_dims,
                    const char* gflag) {
   if (v.empty()) {
     DXERROR("Please specify %s.", gflag);
     return false;
   }
-
+  // 切分字符串
   if (!Split(v, ",", deep_dims)) {
     DXERROR("Invalid %s: %s.", gflag, v.c_str());
     return false;
@@ -82,13 +82,13 @@ bool ParseDeepDims(const std::string& v, std::vector<int>* deep_dims,
   }
   return true;
 }
-
+// 解析参数的维度
 bool ParseDeepDimsAppendOne(const std::string& v, std::vector<int>* deep_dims,
                             const char* gflag) {
   if (!ParseDeepDims(v, deep_dims, gflag)) {
     return false;
   }
-
+  // deep_dims最后一个输出是否是1，如果不是1，就添加1进入
   if (deep_dims->back() != 1) {
     deep_dims->emplace_back(1);
   }
