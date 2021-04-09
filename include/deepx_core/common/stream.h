@@ -380,7 +380,7 @@ enum FILE_OPEN_MODE {
 /************************************************************************/
 class CFileStream : public IOStream {
  protected:
-  void* f_ = nullptr;
+  void* f_ = nullptr; //文件指针
   int mode_ = FILE_OPEN_MODE_NONE;
 
  public:

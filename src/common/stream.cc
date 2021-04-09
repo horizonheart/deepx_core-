@@ -621,7 +621,7 @@ InputStream& GetLine(InputStream& is, std::string& line, char delim) {
 }
 
 /************************************************************************/
-/* BufferedInputStream */
+/* BufferedInputStream 带有缓存的读取流*/
 /************************************************************************/
 BufferedInputStream::BufferedInputStream(InputStream* is, size_t buf_size)
     : is_(is) {
@@ -892,7 +892,7 @@ size_t GunzipInputStream::Peek(void* data, size_t size) {
 #define feof feof_unlocked
 #define ferror ferror_unlocked
 #endif
-
+// 获取文件打开方式
 static const char* GetFopenMode(int _mode) {
   int binary = _mode & FILE_OPEN_MODE_BINARY;
   int mode = _mode & ~FILE_OPEN_MODE_BINARY;
@@ -997,7 +997,7 @@ bool CFileStream::Open(const std::string& file, int mode) {
 }
 
 bool CFileStream::IsOpen() const noexcept { return f_; }
-
+// 如果文件指针不为空，就关闭文件
 void CFileStream::Close() noexcept {
   if (f_) {
     if (f_ != stdin && f_ != stdout) {
