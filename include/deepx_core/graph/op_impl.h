@@ -17,19 +17,24 @@
 
 namespace deepx_core {
 
+// todo op的节点注册
 #define OP_REGISTER(class_name, name) \
   CLASS_FACTORY_REGISTER(Op, class_name, name)
+
 #define OP_NEW(name) CLASS_FACTORY_NEW(Op, name)
 #define OP_NAMES() CLASS_FACTORY_NAMES(Op)
+
+// 定义获取op名字的方法
 #define DEFINE_OP_LIKE(clazz_name) \
   const char* class_name() const noexcept override { return #clazz_name; }
 
+// todo 注册图节点
 #define GRAPH_NODE_OP_REGISTER(name) \
   GRAPH_NODE_REGISTER(name##Node);   \
   OP_REGISTER(name##Op, #name "Node")
 
 /************************************************************************/
-/* OpImpl */
+/* OpImpl op的基类实现 */
 /************************************************************************/
 class OpImpl : public Op {
  protected:

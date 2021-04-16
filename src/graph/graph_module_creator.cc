@@ -11,7 +11,7 @@
 namespace deepx_core {
 
 /************************************************************************/
-/* InstanceNode creator */
+/* InstanceNode creator node创建器*/
 /************************************************************************/
 GraphNode* GetX() {
   return new InstanceNode(X_NAME, Shape(BATCH_PLACEHOLDER, 0), TENSOR_TYPE_CSR);
@@ -58,19 +58,22 @@ GraphNode* GetInstance(const std::string& name, const Shape& shape,
 }
 
 /************************************************************************/
-/* embedding creator */
+/* embedding creator ,embedding向量的创造器*/
 /************************************************************************/
 GraphNode* WideGroupEmbeddingLookup(const std::string& prefix, GraphNode* X,
                                     const std::vector<GroupConfigItem3>& items,
                                     int sparse, int need_grad) {
   DXCHECK_THROW(X->shape().is_rank(2));
   DXCHECK_THROW(!items.empty());
+  // W的参数权重
   std::vector<GraphNode*> W(items.size());
   std::vector<uint16_t> group_ids(items.size());
+
   int tensor_type = sparse ? TENSOR_TYPE_SRM : TENSOR_TYPE_TSR;
   for (size_t i = 0; i < items.size(); ++i) {
     group_ids[i] = items[i].group_id;
     auto ii = std::to_string(group_ids[i]);
+    // 获取对应的变量
     W[i] = GetVariable(prefix + "W" + ii, Shape(items[i].embedding_row, 1),
                        tensor_type, TENSOR_INITIALIZER_TYPE_ZEROS, 0, 0);
     W[i]->set_need_grad(need_grad);
@@ -95,6 +98,7 @@ GraphNode* WideGroupEmbeddingLookup2(const std::string& prefix, GraphNode* X,
   return GroupEmbeddingLookup2("", X, W, group_ids);
 }
 
+// todo 深度模型id的查找
 GraphNode* DeepGroupEmbeddingLookup(const std::string& prefix, GraphNode* X,
                                     const std::vector<GroupConfigItem3>& items,
                                     int sparse, int need_grad) {
@@ -107,7 +111,7 @@ GraphNode* DeepGroupEmbeddingLookup(const std::string& prefix, GraphNode* X,
     group_ids[i] = items[i].group_id;
     auto ii = std::to_string(group_ids[i]);
     W[i] = GetVariable(prefix + "W" + ii,
-                       Shape(items[i].embedding_row, items[i].embedding_col),
+                       Shape(items[i].embedding_row, items[i].embedding_col), //wide部分和deep部分的区别主要在这个embedding维度
                        tensor_type, TENSOR_INITIALIZER_TYPE_RANDN, 0, 1e-3);
     W[i]->set_need_grad(need_grad);
   }

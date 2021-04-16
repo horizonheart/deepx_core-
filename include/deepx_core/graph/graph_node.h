@@ -16,15 +16,19 @@
 
 namespace deepx_core {
 
+// 计算图节点的注册
 #define GRAPH_NODE_REGISTER(class_name) \
   CLASS_FACTORY_REGISTER(GraphNode, class_name, #class_name)
+
 #define GRAPH_NODE_NEW(class_name) CLASS_FACTORY_NEW(GraphNode, class_name)
 
+// todo 基类函数中，不对超级父类的函数重写
 #define DEFINE_GRAPH_NODE_LIKE_BASE(clazz_name) \
   clazz_name() = default;                       \
   clazz_name(const clazz_name&) = delete;       \
   clazz_name& operator=(const clazz_name&) = delete
 
+// todo 定义节点，重写父类的函数
 #define DEFINE_GRAPH_NODE_LIKE(clazz_name)                                 \
   clazz_name() = default;                                                  \
   clazz_name(const clazz_name&) = delete;                                  \
@@ -34,6 +38,7 @@ namespace deepx_core {
     return typeid(clazz_name);                                             \
   }
 
+// 定义图节点的读写
 #define _DEFINE_GRAPH_NODE_WRITE_READ(...) \
   void Write(OutputStream& os) override {  \
     GraphNode::Write(os);                  \
@@ -44,6 +49,7 @@ namespace deepx_core {
     is.ReadObject(__VA_ARGS__);            \
   }
 
+// --------------------------------判断属性是否相等------------------------------------
 #define _DEFINE_GRAPH_NODE_IS_ATTR_EQUAL1(class_name, a1)            \
   bool IsAttrEqual(const GraphNode* other) const noexcept override { \
     return this->type_index() == other->type_index() &&              \
@@ -144,25 +150,36 @@ namespace deepx_core {
            this->a10 == ((const class_name*)other)->a10;                       \
   }
 
+// 节点拼接
 #define _GRAPH_NODE_CONCAT(x, y) x y
+
+// 统计可变参数的数量
 #define _GRAPH_NODE_COUNT_ARGS_IMPL2(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, \
                                      count, ...)                              \
   count
 #define _GRAPH_NODE_COUNT_ARGS_IMPL1(args) _GRAPH_NODE_COUNT_ARGS_IMPL2 args
+
+// 计算可变参数的数量
 #define _GRAPH_NODE_COUNT_ARGS(...) \
   _GRAPH_NODE_COUNT_ARGS_IMPL1((__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0))
+
 #define _DEFINE_GRAPH_NODE_IS_ATTR_EQUAL_IMPL2(count) \
   _DEFINE_GRAPH_NODE_IS_ATTR_EQUAL##count
+
 #define _DEFINE_GRAPH_NODE_IS_ATTR_EQUAL_IMPL1(count) \
   _DEFINE_GRAPH_NODE_IS_ATTR_EQUAL_IMPL2(count)
+
 #define _DEFINE_GRAPH_NODE_IS_ATTR_EQUAL(count) \
   _DEFINE_GRAPH_NODE_IS_ATTR_EQUAL_IMPL1(count)
+
+// todo 定义节点的属性，判断属性是否相等
 #define DEFINE_GRAPH_NODE_ATTR(class_name, ...)                              \
   _GRAPH_NODE_CONCAT(                                                        \
       _DEFINE_GRAPH_NODE_IS_ATTR_EQUAL(_GRAPH_NODE_COUNT_ARGS(__VA_ARGS__)), \
       (class_name, __VA_ARGS__))                                             \
   _DEFINE_GRAPH_NODE_WRITE_READ(__VA_ARGS__)
 
+// 创建图节点的宏
 #define DEFINE_GRAPH_NODE_CREATOR(class_name_without_Node)                 \
   template <typename... Args>                                              \
   GraphNode* class_name_without_Node(std::string name, Args&&... args) {   \
@@ -171,7 +188,7 @@ namespace deepx_core {
   }
 
 /************************************************************************/
-/* GRAPH_NODE_TYPE */
+/* GRAPH_NODE_TYPE 图的节点的类型*/
 /************************************************************************/
 enum GRAPH_NODE_TYPE {
   GRAPH_NODE_TYPE_NONE = 0,
@@ -185,7 +202,7 @@ class SimpItem;
 class GraphNode;
 
 /************************************************************************/
-/* GraphNode */
+/* GraphNode 图节点的父类*/
 /************************************************************************/
 class GraphNode {
  protected:
@@ -304,7 +321,7 @@ class GraphNode {
 };
 
 /************************************************************************/
-/* base node */
+/* base node  基础的图节点*/
 /************************************************************************/
 class GraphNodeUnaryBase : public GraphNode {
  public:
@@ -350,6 +367,7 @@ class GraphNodeForAxisBase : public GraphNodeUnaryBase {
   DEFINE_GRAPH_NODE_LIKE_BASE(GraphNodeForAxisBase);
 };
 
+// todo reduce节点
 class GraphNodeReduceAxisBase : public GraphNodeUnaryBase {
  private:
   int reduce_all_ = 0;
@@ -768,6 +786,7 @@ class ReduceMeanNode : public GraphNodeReduceAxisBase {
   DEFINE_GRAPH_NODE_LIKE(ReduceMeanNode);
 };
 
+//todo ReduceSumNode 节点
 class ReduceSumNode : public GraphNodeReduceAxisBase {
  public:
   ReduceSumNode(std::string name, GraphNode* X, int axis, int keep_dim);
@@ -1175,7 +1194,7 @@ class SigmoidFocalLossNode : public GraphNodeBinaryElementWiseBase {
 };
 
 /************************************************************************/
-/* instance op */
+/* instance op 实例节点继承了图的节点*/
 /************************************************************************/
 class InstanceNode : public GraphNode {
  public:
@@ -1321,9 +1340,11 @@ class EmbeddingLookupNode : public GraphNode {
   DEFINE_GRAPH_NODE_LIKE(EmbeddingLookupNode);
 };
 
+// todo group组的embedding向量进行查找的节点
 class GroupEmbeddingLookupNode : public GraphNode {
  private:
   std::vector<uint16_t> group_ids_;
+  //定义节点的属性，判断属性是否相等,通过可变参数实现，首先统计可变参数的数量。
   DEFINE_GRAPH_NODE_ATTR(GroupEmbeddingLookupNode, group_ids_);
 
  public:
@@ -1333,6 +1354,7 @@ class GroupEmbeddingLookupNode : public GraphNode {
   GroupEmbeddingLookupNode(std::string name, GraphNode* X,
                            const std::vector<GraphNode*>& W,
                            std::vector<uint16_t> group_ids);
+  // 实现父类的接口，并禁用一拷贝构造函数
   DEFINE_GRAPH_NODE_LIKE(GroupEmbeddingLookupNode);
 };
 

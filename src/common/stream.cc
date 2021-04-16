@@ -601,17 +601,17 @@ bool LocalFileSystem::ListRecursive(
 }
 
 /************************************************************************/
-/* GetLine */
+/* GetLine 读取文件的一行*/
 /************************************************************************/
 InputStream& GetLine(InputStream& is, std::string& line) {
   return GetLine(is, line, '\n');
 }
-
+// 按照分割符读取文件的一行
 InputStream& GetLine(InputStream& is, std::string& line, char delim) {
   char c;
   line.clear();
   for (;;) {
-    c = is.ReadChar();
+    c = is.ReadChar(); //读取一个字符
     if (!is || c == delim) {
       break;
     }
@@ -640,8 +640,9 @@ BufferedInputStream::BufferedInputStream(InputStream* is, size_t buf_size)
     end_ = cur_;
   }
 }
-
+// 填充空的缓存池
 size_t BufferedInputStream::FillEmptyBuf() {
+  // begin_是缓存池的首地址
   size_t avail_bytes = is_->Read(begin_, buf_size_);
   if (avail_bytes == 0) {
     bad_ = 1;
@@ -680,7 +681,7 @@ size_t BufferedInputStream::EnsureBuf(size_t need_bytes) {
   end_ += bytes;
   return avail_bytes;
 }
-
+// 读取指定数量的字节
 size_t BufferedInputStream::Read(void* data, size_t size) {
   size_t need_bytes = size;
   size_t avail_bytes = end_ - cur_;
@@ -702,7 +703,7 @@ size_t BufferedInputStream::Read(void* data, size_t size) {
     }
   }
 }
-
+// 读取一个字符
 char BufferedInputStream::ReadChar() {
   size_t avail_bytes = end_ - cur_;
   if (avail_bytes == 0) {
@@ -939,7 +940,9 @@ bool CFileStream::Flush() {
   }
   return true;
 }
-
+// 读取指定数量的字符 size_t  fread(void *buffer, size_t size, size_t count, FILE * stream);
+// fread()函数每次从stream中最多读取count个单元，每个单元大小为size个字节，
+// 将读取的数据放到buffer；文件流的位置指针后移 size * count 字节。
 size_t CFileStream::Read(void* data, size_t size) {
   size_t bytes = fread(data, 1, size, (FILE*)f_);
   if (bytes < size) {
@@ -971,7 +974,7 @@ size_t CFileStream::Peek(void* data, size_t size) {
 }
 // 打开文件，以不同的mode的形式
 bool CFileStream::Open(const std::string& file, int mode) {
-  Close();
+  Close(); //打开新的文件之前，先关闭之前打开文件的指针，以放内存数据泄露
 
   if (IsStdinStdoutPath(file)) {
     if (mode & FILE_OPEN_MODE_IN) {
@@ -1995,7 +1998,7 @@ size_t AutoInputFileStream::Read(void* data, size_t size) {
   bad_ = is_->bad();
   return bytes;
 }
-
+// AutoInputFileStream 封装的接口
 char AutoInputFileStream::ReadChar() {
   char c = is_->ReadChar();
   bad_ = is_->bad();
@@ -2054,7 +2057,7 @@ bool AutoInputFileStream::Open(const std::string& file) {
     }
 
     is_extra_ = std::move(is_extra);
-    if (IsGzipFile(file)) {
+    if (IsGzipFile(file)) { //判断文件是否是压缩包
       is_.reset(new GunzipInputStream(is_extra_.get()));
     } else {
       is_.reset(new BufferedInputStream(is_extra_.get()));

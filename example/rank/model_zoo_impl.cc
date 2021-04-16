@@ -52,16 +52,20 @@ bool ModelZooImpl::InitConfig(const StringMap& config) {
 // todo 父类初始化key value类型的配置
 bool ModelZooImpl::InitConfigKV(const std::string& k, const std::string& v) {
   if (k == "config" || k == "group_config") {
+    // 加载配置文件的内容到items_
     if (!GuessGroupConfig(v, &items_, nullptr, k.c_str())) {
       return false;
     }
+    // 判断要embedding的维度大小是否一样
     item_is_fm_ = IsFMGroupConfig(items_) ? 1 : 0;
+
     item_m_ = (int)items_.size();
     if (item_is_fm_) {
       item_k_ = items_.front().embedding_col;
     } else {
       item_k_ = 0;
     }
+    // 总的embedding的大小
     item_mk_ = GetTotalEmbeddingCol(items_);
   } else if (k == "w" || k == "has_w") {
     has_w_ = std::stoi(v);

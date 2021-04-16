@@ -11,6 +11,7 @@ namespace deepx_core {
 /************************************************************************/
 namespace {
 
+// 辅助结构体
 struct GroupEmbeddingLookupAux {
   Shape Z;
   std::vector<int> Zoffset;  // indexed by group id
@@ -27,14 +28,17 @@ bool GroupEmbeddingLookupPrepare(int Xrow,
                                  const std::vector<uint16_t>& group_ids,
                                  const std::vector<const Shape*>& W,
                                  GroupEmbeddingLookupAux* aux) {
+  // 判断group的数量和w的数量是否相等
   if (group_ids.size() != W.size()) {
     DXERROR("Invalid group_ids and W: inconsistent size %zu vs %zu.",
             group_ids.size(), W.size());
     return false;
   }
 
+  // 最大的组id
   uint16_t max_group_id =
       *std::max_element(group_ids.begin(), group_ids.end()) + 1;
+  
   int n = 0;
   aux->Zoffset.assign(max_group_id, -1);
   for (size_t i = 0; i < group_ids.size(); ++i) {
@@ -49,11 +53,12 @@ bool GroupEmbeddingLookupPrepare(int Xrow,
   return true;
 }
 
+// todo 推断embedding向量的长度 Xrow代表batch
 bool GroupEmbeddingLookupInferShape(int Xrow,
                                     const std::vector<uint16_t>& group_ids,
                                     const std::vector<const Shape*>& W,
                                     Shape* Z) {
-  GroupEmbeddingLookupAux aux;
+  GroupEmbeddingLookupAux aux;//临时变量
   if (!GroupEmbeddingLookupPrepare(Xrow, group_ids, W, &aux)) {
     return false;
   }
@@ -195,13 +200,16 @@ void GroupSparseEmbeddingLookupBackward(
 
 }  // namespace
 
+// todo GroupEmbeddingLookupNode op的具体实现
 GroupEmbeddingLookupNode::GroupEmbeddingLookupNode(
     std::string name, GraphNode* X, const std::vector<GraphNode*>& W,
     std::vector<uint16_t> group_ids)
     : GraphNode(std::move(name)), group_ids_(std::move(group_ids)) {
+  // 异常值检查
   DXCHECK_THROW(X->node_type() == GRAPH_NODE_TYPE_INSTANCE);
   DXCHECK_THROW(X->tensor_type() == TENSOR_TYPE_CSR);
   DXCHECK_THROW(!W.empty());
+
   int W_node_type = W[0]->node_type();
   int W_tensor_type = W[0]->tensor_type();
   DXCHECK_THROW(W_tensor_type == TENSOR_TYPE_TSR ||
@@ -220,9 +228,12 @@ GroupEmbeddingLookupNode::GroupEmbeddingLookupNode(
 
   if (X->shape().is_rank(2) && HasShape(W)) {
     std::vector<const Shape*> Wshape(group_ids_.size());
+    // 获取这些id特征的形状
     for (size_t i = 0; i < group_ids_.size(); ++i) {
       Wshape[i] = &W[i]->shape();
     }
+    // shape_ 当前节点的形状
+    // 推断当前节点的形状
     (void)GroupEmbeddingLookupInferShape(X->shape()[0], group_ids_, Wshape,
                                          &shape_);
   }

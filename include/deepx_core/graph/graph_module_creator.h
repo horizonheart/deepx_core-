@@ -26,7 +26,7 @@ GraphNode* GetInstance(const std::string& name, const Shape& shape,
                        int tensor_type);
 
 /************************************************************************/
-/* embedding creator */
+/* embedding creator 创建embedding的制造器*/
 /************************************************************************/
 // Share variables.
 GraphNode* WideGroupEmbeddingLookup(const std::string& prefix, GraphNode* X,

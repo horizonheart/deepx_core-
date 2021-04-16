@@ -5,15 +5,17 @@
 #include <deepx_core/graph/op_impl.h>
 
 namespace deepx_core {
-
+// 构建节点的实例
 InstanceNode::InstanceNode(std::string name, const Shape& shape,
                            int tensor_type)
     : GraphNode(std::move(name)) {
   // 'name' must be valid.
+  // 检查名字是否合法
   DXCHECK_THROW(IsValidName());
   DXCHECK_THROW(
       tensor_type == TENSOR_TYPE_TSR || tensor_type == TENSOR_TYPE_CSR ||
       tensor_type == TENSOR_TYPE_TSRI || tensor_type == TENSOR_TYPE_TSRS);
+  
   node_type_ = GRAPH_NODE_TYPE_INSTANCE;
   tensor_type_ = tensor_type;
   shape_ = shape;

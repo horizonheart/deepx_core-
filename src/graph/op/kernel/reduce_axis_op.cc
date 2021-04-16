@@ -14,6 +14,7 @@ struct ReduceAxisAux {
   int k = 0;  // axis dim
 };
 
+// 四个参数的形状推断
 bool ReduceAxisPrepare(const Shape& X, int axis, int keep_dim,
                        ReduceAxisAux* aux) noexcept {
   int rank = X.rank();
@@ -27,8 +28,10 @@ bool ReduceAxisPrepare(const Shape& X, int axis, int keep_dim,
     return false;
   }
 
-  int Zrank;
+  int Zrank; //代表总reduce求和后，总共剩多少维度
   int Zdims[SHAPE_MAX_RANK];
+  //m代表的是要求和的维度之前有多少维
+  //n代表的是之后
   int m = 1, n = 1, k;
   for (int j = 0; j < axis; ++j) {
     Zdims[j] = X[j];
@@ -42,7 +45,7 @@ bool ReduceAxisPrepare(const Shape& X, int axis, int keep_dim,
       Zdims[j] = X[j];
       n *= X[j];
     }
-  } else {
+  } else { 
     Zrank = rank - 1;
     for (int j = axis + 1; j < rank; ++j) {
       Zdims[j - 1] = X[j];
@@ -57,6 +60,7 @@ bool ReduceAxisPrepare(const Shape& X, int axis, int keep_dim,
   return true;
 }
 
+// 四个参数的Reduce形状推断
 bool ReduceAxisInferShape(const Shape& X, int axis, int keep_dim,
                           Shape* Z) noexcept {
   ReduceAxisAux aux;
@@ -67,6 +71,7 @@ bool ReduceAxisInferShape(const Shape& X, int axis, int keep_dim,
   return true;
 }
 
+// 计算输入的形状
 bool ReduceAxisPrepare(const Shape& X, ReduceAxisAux* aux) noexcept {
   int rank = X.rank();
   if (rank == 0) {
@@ -74,6 +79,7 @@ bool ReduceAxisPrepare(const Shape& X, ReduceAxisAux* aux) noexcept {
     return false;
   }
 
+  // 将shape的形状变成一维
   aux->Z.resize(1);
   aux->m = 1;
   aux->n = 1;
@@ -81,6 +87,7 @@ bool ReduceAxisPrepare(const Shape& X, ReduceAxisAux* aux) noexcept {
   return true;
 }
 
+// 两个参数的Reduce形状推断
 bool ReduceAxisInferShape(const Shape& X, Shape* Z) noexcept {
   ReduceAxisAux aux;
   if (!ReduceAxisPrepare(X, &aux)) {
@@ -357,14 +364,17 @@ DEFINE_REDUCE_AXIS_OP(ArgMin)
 
 }  // namespace
 
+// GraphNodeReduceAxisBase四个参数的构造函数
 GraphNodeReduceAxisBase::GraphNodeReduceAxisBase(std::string name, GraphNode* X,
                                                  int axis, int keep_dim)
     : GraphNodeUnaryBase(std::move(name), X), axis_(axis), keep_dim_(keep_dim) {
   if (!X->shape().empty()) {
+    // 推断形状
     (void)ReduceAxisInferShape(X->shape(), axis_, keep_dim_, &shape_);
   }
 }
 
+// GraphNodeReduceAxisBase两个参数的构造函数
 GraphNodeReduceAxisBase::GraphNodeReduceAxisBase(std::string name, GraphNode* X)
     : GraphNodeUnaryBase(std::move(name), X), reduce_all_(1) {
   if (!X->shape().empty()) {
@@ -372,6 +382,7 @@ GraphNodeReduceAxisBase::GraphNodeReduceAxisBase(std::string name, GraphNode* X)
   }
 }
 
+// todo OpReduce的基类
 class OpReduceAxisBase : public OpImpl {
  protected:
   const GraphNode* Xnode_ = nullptr;
@@ -406,6 +417,7 @@ class OpReduceAxisBase : public OpImpl {
   }
 };
 
+// todo 定义reduce的具体实现
 #define DEFINE_REDUCE_AXIS_OP1(name)                                   \
   name##Node::name##Node(std::string name, GraphNode* X, int axis,     \
                          int keep_dim)                                 \
@@ -439,6 +451,7 @@ class OpReduceAxisBase : public OpImpl {
                                                                    \
   GRAPH_NODE_OP_REGISTER(name)
 
+// todo==========================我嘞个擦，竟然隐藏在这里=========================
 DEFINE_REDUCE_AXIS_OP1(ReduceMean);
 DEFINE_REDUCE_AXIS_OP1(ReduceSum);
 DEFINE_REDUCE_AXIS_OP1(ReduceMax);

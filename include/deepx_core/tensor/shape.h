@@ -39,6 +39,7 @@ class Shape {
   int dim(Int i) const noexcept {
     return dim_[i];
   }
+  // 重载运算符
   template <typename Int>
   int operator[](Int i) const noexcept {
     return dim_[i];
@@ -69,7 +70,7 @@ class Shape {
     total_dim_ = d0;
     dim_[0] = d0;
   }
-
+//  封装shape的形状
   Shape(int d0, int d1) noexcept {
     rank_ = 2;
     total_dim_ = d0 * d1;
@@ -104,6 +105,7 @@ class Shape {
   }
 
  public:
+  // todo 利用数组整体赋值操作
   template <typename II, typename = typename std::enable_if<
                              !std::is_integral<II>::value>::type>
   void assign(II first, II last) {
@@ -127,6 +129,7 @@ class Shape {
     }
   }
 
+  // 清楚修改数据
   void clear() noexcept {
     rank_ = 0;
     total_dim_ = 0;

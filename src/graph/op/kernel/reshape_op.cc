@@ -83,7 +83,7 @@ class ReshapeFastOp : public OpImpl {
 GRAPH_NODE_OP_REGISTER(ReshapeFast);
 
 /************************************************************************/
-/* Reshape2 */
+/* Reshape2 重置形状*/
 /************************************************************************/
 Reshape2Node::Reshape2Node(std::string name, GraphNode* X, const Shape& shape)
     : GraphNodeUnaryBase(std::move(name), X), new_shape_(shape) {

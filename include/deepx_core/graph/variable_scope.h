@@ -12,7 +12,7 @@
 namespace deepx_core {
 
 /************************************************************************/
-/* VariableScopeManager */
+/* VariableScopeManager 变量管理器*/
 /************************************************************************/
 class VariableScopeManager {
  private:

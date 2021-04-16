@@ -8,7 +8,7 @@
 namespace deepx_core {
 
 /************************************************************************/
-/* GraphNode */
+/* GraphNode 图的节点*/
 /************************************************************************/
 GraphNode::GraphNode(std::string name) noexcept : name_(std::move(name)) {}
 
@@ -16,7 +16,9 @@ bool GraphNode::IsAttrEqual(const GraphNode* other) const noexcept {
   return this->type_index() == other->type_index();
 }
 
+// 重写图的序列化操作
 void GraphNode::Write(OutputStream& os) {
+  // 复制name的值
   input_name_.resize(input_.size());
   for (size_t i = 0; i < input_.size(); ++i) {
     input_name_[i] = input_[i]->name();
@@ -72,6 +74,7 @@ void GraphNode::Read(InputStream& is) {
   }
 }
 
+// 检查图的节点名称是否合规
 bool GraphNode::IsValidName() const noexcept {
   if (name_.empty()) {
     return false;
@@ -85,7 +88,7 @@ bool GraphNode::IsValidName() const noexcept {
   }
   return true;
 }
-
+// 判断是否有形状
 bool GraphNode::HasShape(const std::vector<GraphNode*>& X) noexcept {
   for (const GraphNode* _X : X) {
     if (_X->shape().empty()) {
@@ -96,8 +99,9 @@ bool GraphNode::HasShape(const std::vector<GraphNode*>& X) noexcept {
 }
 
 /************************************************************************/
-/* base node */
+/* base node 基础类节点*/
 /************************************************************************/
+// GraphNodeUnaryBase构造函数
 GraphNodeUnaryBase::GraphNodeUnaryBase(std::string name, GraphNode* X)
     : GraphNode(std::move(name)) {
   DXCHECK_THROW(X->tensor_type() == TENSOR_TYPE_TSR);

@@ -40,8 +40,11 @@ class DeepFMModel : public ModelZooImpl {
   }
 
  public:
+  // 初始化图的构造
   bool InitGraph(Graph* graph) const override {
-    auto* X = GetX();
+    // 获取模型的输入X
+    auto* X = GetX();  //x的类型是InstanceNode
+
     auto* lin1 = WideGroupEmbeddingLookup("lin", X, items_, sparse_);
     auto* lin2 = ReduceSum("", lin1, 1, 1);
     auto* quad1 = DeepGroupEmbeddingLookup("quad", X, items_, sparse_);

@@ -6,6 +6,7 @@
 
 namespace deepx_core {
 
+// todo 三个参数的构造函数，主要是参数类型的检查，参数的形状检查
 VariableNode::VariableNode(std::string name, const Shape& shape,
                            int tensor_type)
     : GraphNode(std::move(name)) {
@@ -32,7 +33,7 @@ VariableNode::VariableNode(std::string name, const Shape& shape,
   shape_ = shape;
   need_grad_ = 1;
 }
-
+// todo 创建变量节点
 VariableNode::VariableNode(std::string name, const Shape& shape,
                            int tensor_type, int initializer_type,
                            double initializer_param1, double initializer_param2)

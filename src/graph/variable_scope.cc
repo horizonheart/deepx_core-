@@ -11,6 +11,7 @@ namespace deepx_core {
 /************************************************************************/
 /* VariableScopeManager */
 /************************************************************************/
+// 获取变量的名字
 std::string VariableScopeManager::GetVariableName(
     const std::string& name) const {
   std::string variable_name;
@@ -21,7 +22,7 @@ std::string VariableScopeManager::GetVariableName(
   variable_name += name;
   return variable_name;
 }
-
+// 这个地方是获取变量节点的指针
 VariableNode* VariableScopeManager::_GetVariable(
     variable_node_ptr_t& node, variable_node_ptr_t& new_node) {
   if (node) {
@@ -34,7 +35,7 @@ VariableNode* VariableScopeManager::_GetVariable(
   }
   return node.get();
 }
-
+// 单例对象
 VariableScopeManager& VariableScopeManager::Get() {
   static VariableScopeManager manager;
   return manager;
@@ -68,18 +69,22 @@ VariableNode* VariableScopeManager::GetVariable(const std::string& name,
   variable_node_ptr_t& node = variable_map_[variable_name];
   return _GetVariable(node, new_node);
 }
-
+// todo 2.0 创建变量
 VariableNode* VariableScopeManager::GetVariable(const std::string& name,
                                                 const Shape& shape,
                                                 int tensor_type,
                                                 int initializer_type,
                                                 double initializer_param1,
                                                 double initializer_param2) {
+  // 获取变量的名称
   std::string variable_name = GetVariableName(name);
+  // std::unique_ptr<VariableNode>
   variable_node_ptr_t new_node(
       new VariableNode(variable_name, shape, tensor_type, initializer_type,
                        initializer_param1, initializer_param2));
+  // 字典中如果不存在，就建立对应的索引
   variable_node_ptr_t& node = variable_map_[variable_name];
+
   return _GetVariable(node, new_node);
 }
 
@@ -100,6 +105,7 @@ VariableNode* VariableScopeManager::GetVariable(const std::string& name,
   variable_node_ptr_t new_node(
       new VariableNode(variable_name, shape, initializer_type,
                        initializer_param1, initializer_param2));
+  // 字典中如果不存在，就建立对应的索引
   variable_node_ptr_t& node = variable_map_[variable_name];
   return _GetVariable(node, new_node);
 }
@@ -132,7 +138,7 @@ VariableNode* GetVariable(const std::string& name, const Shape& shape,
                           int tensor_type) {
   return VariableScopeManager::Get().GetVariable(name, shape, tensor_type);
 }
-
+// todo 1.0 获取变量
 VariableNode* GetVariable(const std::string& name, const Shape& shape,
                           int tensor_type, int initializer_type,
                           double initializer_param1,

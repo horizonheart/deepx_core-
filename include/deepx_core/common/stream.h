@@ -724,6 +724,8 @@ template <typename V, typename H, typename P, typename A>
 InputStringStream& ReadView(InputStringStream& is,               // NOLINT
                             std::unordered_set<V, H, P, A>& s);  // NOLINT
 
+// 重写文件的重定向方法 
+//todo 非静态成员都是”平凡的“
 template <typename T>
 OutputStream& operator<<(OutputStream& os, const T& t) {
   static_assert(std::is_pod<T>::value, "T must be POD.");

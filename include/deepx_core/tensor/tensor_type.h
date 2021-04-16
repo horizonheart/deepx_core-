@@ -26,15 +26,20 @@ enum TENSOR_DTYPE {
 };
 
 /************************************************************************/
-/* TENSOR_TYPE */
+/* TENSOR_TYPE tensor的类型*/
+// Tensor<float_t>                  TENSOR_TYPE_TSR	TSR	        浮点型稠密张量	    参数, 样本, 隐层, 梯度
+// Tensor<int_t>                    TENSOR_TYPE_TSRI	TSRI	    整型稠密张量	      样本
+// Tensor<std::string>              TENSOR_TYPE_TSRS	TSRS	    字符串型稠密张量	   样本
+// SparseRowMatrix<int_t, float_t>  TENSOR_TYPE_SRM	SRM	        稀疏行矩阵	        参数, 梯度
+// CSRMatrix<int_t, float_t>	      TENSOR_TYPE_CSR	CSR	        压缩稀疏行矩阵	     样本
 /************************************************************************/
 enum TENSOR_TYPE {
   TENSOR_TYPE_NONE = 0,
-  TENSOR_TYPE_TSR = 1,
-  TENSOR_TYPE_SRM = 2,
-  TENSOR_TYPE_CSR = 3,
-  TENSOR_TYPE_TSRI = 4,
-  TENSOR_TYPE_TSRS = 5,
+  TENSOR_TYPE_TSR = 1, //浮点型稠密张量--------参数, 样本, 隐层, 梯度
+  TENSOR_TYPE_SRM = 2, //稀疏行矩阵------------参数, 梯度
+  TENSOR_TYPE_CSR = 3, //压缩稀疏行矩阵---------样本
+  TENSOR_TYPE_TSRI = 4,//整型稠密张量----------样本
+  TENSOR_TYPE_TSRS = 5,//字符串型稠密张量--------样本
   TENSOR_TYPE_SRP = 10,  // backward compatibility
   TENSOR_TYPE_SVP = 11,  // backward compatibility
   TENSOR_TYPE_SRG = 12,  // backward compatibility

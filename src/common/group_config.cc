@@ -24,6 +24,7 @@ InputStream& operator>>(InputStream& is, GroupConfigItem3& item) {
   return is;
 }
 
+// 重载运算符的逻辑
 std::istream& operator>>(std::istream& is, GroupConfigItem3& item) {
   is >> item.group_id >> item.embedding_row >> item.embedding_col;
   return is;
@@ -50,7 +51,8 @@ bool LoadGroupConfig(const std::string& file,
   }
 
   while (GetLine(is, line)) {
-    if (line.find('#') != std::string::npos) {
+    //#号、//号开开头的为注释 
+    if (line.find('#') != std::string::npos) { 
       continue;
     }
 
@@ -61,6 +63,7 @@ bool LoadGroupConfig(const std::string& file,
     GroupConfigItem3 item;
     iss.clear();
     iss.str(line);
+    //运算符重载
     if (!(iss >> item)) {
       DXERROR("Invalid line: %s.", line.c_str());
       return false;
@@ -80,7 +83,8 @@ bool LoadGroupConfig(const std::string& file,
       DXERROR("Invalid embedding col: %d.", item.embedding_col);
       return false;
     }
-
+    
+    // 数量大小的判断
     if ((uint64_t)item.embedding_row * (uint64_t)item.embedding_col >
         (uint64_t)std::numeric_limits<int>::max()) {
       DXERROR("Too large embedding row and embedding col: %d %d.",
@@ -89,6 +93,8 @@ bool LoadGroupConfig(const std::string& file,
     }
 
     items->emplace_back(item);
+    
+    // todo 记录组的信息
     dedup.emplace(item.group_id);
     if (max_group_id) {
       if (*max_group_id < (int)item.group_id) {
@@ -233,6 +239,7 @@ std::vector<GroupConfigItem3> GetLRGroupConfig(
   return lr_items;
 }
 
+// 判断配置文件是否是fm的配置
 bool IsFMGroupConfig(const std::vector<GroupConfigItem3>& items) {
   if (items.empty()) {
     return false;
@@ -262,7 +269,7 @@ bool CheckFMGroupConfig(const std::vector<GroupConfigItem3>& items) {
   }
   return true;
 }
-
+// 获取总共embedding向量维度
 int GetTotalEmbeddingCol(const std::vector<GroupConfigItem3>& items) {
   int total = 0;
   for (const GroupConfigItem3& item : items) {

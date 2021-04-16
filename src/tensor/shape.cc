@@ -35,7 +35,7 @@ void Shape::Construct(int dim) noexcept {
   total_dim_ *= dim;
   dim_[rank_++] = dim;
 }
-
+// 将负数的维度转为正数
 bool Shape::real_axis(int* axis) const noexcept {
   if (*axis >= rank_ || *axis < -rank_) {
     return false;
@@ -58,6 +58,7 @@ int Shape::real_axis(int axis) const noexcept {
   return axis;
 }
 
+// reshape方法的具体实现
 bool Shape::do_reshape_nothrow(const Shape& other) noexcept {
   int neg = 0, other_neg = 0;
   for (int i = 0; i < rank_; ++i) {
@@ -164,6 +165,7 @@ Shape& Shape::reshape(const Shape& other) {
   return *this;
 }
 
+// 重置形状
 Shape& Shape::reshape_nothrow(const Shape& other) noexcept {
   if (!do_reshape_nothrow(other)) {
     DXERROR("Couldn't reshape from %s to %s.", to_string(*this).c_str(),
@@ -217,6 +219,7 @@ bool Shape::same_shape(const Shape& other) const noexcept {
   return true;
 }
 
+// 重写shape的to string方法
 std::string to_string(const Shape& shape) {
   std::ostringstream os;
   os << "(";

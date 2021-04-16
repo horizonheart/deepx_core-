@@ -100,6 +100,7 @@ void Trainer::Init() {
     DXCHECK_THROW(ParseConfig(FLAGS_model_config, &config));
     // 初始化模型相关的配置
     DXCHECK_THROW(model_zoo->InitConfig(config));
+    // 初始化网络图结构
     DXCHECK_THROW(model_zoo->InitGraph(&graph_));
   } else {
     DXCHECK_THROW(LoadGraph(FLAGS_in_model, &graph_));
